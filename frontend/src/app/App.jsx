@@ -4,8 +4,11 @@ import { MonacoBinding } from "y-monaco";
 import { useRef, useMemo, useState, useEffect } from "react";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
+import { VscLayoutSidebarRightDock } from "react-icons/vsc";
+import { IoClose } from "react-icons/io5";
 
 function App() {
+  const [showUser, setShowUsers] = useState(false);
   const editorRef = useRef(null);
   const [username, setUsername] = useState(() => {
     return new URLSearchParams(window.location.search).get("username") || "";
@@ -92,10 +95,16 @@ function App() {
   }
 
   return (
-    <main className="h-screen w-full bg-gray-950 flex gap-4 p-4">
-      <aside className="h-full w-1/4 bg-amber-50 rounded-lg ">
-        <h2 className="text-2xl font-bold p-4 border-b border-gray-300">
-          Users
+    <>
+      <aside
+        className={`w-3/5 mr-4 absolute lg:hidden  bg-amber-50 rounded-r-lg transition-all h-full z-20 delay-75 ease-linear ${!showUser ? "-translate-x-full" : ""}`}
+      >
+        <h2 className="text-2xl inline-flex justify-between items-center w-full font-bold p-4 border-b border-gray-300">
+          Users{" "}
+          <IoClose
+            className="inline-flex text-3xl"
+            onClick={() => setShowUsers(false)}
+          />
         </h2>
         <ul className="p-4">
           {users.map((user, index) => (
@@ -105,16 +114,38 @@ function App() {
           ))}
         </ul>
       </aside>
-      <section className="w-3/4 bg-neutral-800 rounded-lg overflow-hidden">
-        <Editor
-          height="100%"
-          defaultLanguage="javascript"
-          defaultValue="// some comment"
-          theme="vs-dark"
-          onMount={handleMount}
-        />
-      </section>
-    </main>
+      <main className="h-screen w-full bg-gray-950 flex gap-4 p-4">
+        <aside className="h-full hidden lg:flex lg:w-1/4 bg-amber-50 rounded-lg ">
+          <h2 className="text-2xl font-bold p-4 border-b border-gray-300">
+            Users
+          </h2>
+          <ul className="p-4">
+            {users.map((user, index) => (
+              <li
+                key={index}
+                className="p-2 bg-gray-800 text-white rounded mb-2"
+              >
+                {user.username}
+              </li>
+            ))}
+          </ul>
+        </aside>
+        <section className="w-full lg:w-3/4 bg-neutral-800 rounded-lg overflow-hidden">
+          <VscLayoutSidebarRightDock
+            onClick={() => setShowUsers(true)}
+            className="text-amber-300 text-2xl lg:hidden z-10 absolute "
+          />
+
+          <Editor
+            height="100%"
+            defaultLanguage="javascript"
+            defaultValue="// some comment"
+            theme="vs-dark"
+            onMount={handleMount}
+          />
+        </section>
+      </main>
+    </>
   );
 }
 
